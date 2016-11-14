@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="pro_scrw" title="计划制定">
+	<normal-actions>
+		<!-- <button name="drsxBtn" label="导入刷新"  type="button" icon="icon-Import" onClick="drsxBtnClick"></button> -->
+		<button name="addBtn" label="添加"  type="button" icon="icon-Add_to" onClick="addScrwRow"></button>
+		<button name="queryBtn" label="查询"  type="button" icon="icon-query" onClick="openQueryWindow"></button>
+	</normal-actions>
+	<table name="table_scrw" scroll="false"  url="table_scrw" minheight="430" multiselect="false" onLoaded="table_editreset" layoutconstraint="md:12;sm:12;"  onDblClickRow="dbltable_scrwClickrow">
+		
+		<!-- <column label="生产任务编号" name="scrwbh"  width="130"></column>-->
+		<column label="零件项号" name="ljxhxf" editable="true" editrules="{required:true}" type="text" edittype="search">
+				<attribute name="editoptions"><![CDATA[
+					{
+						displaykey:"label",
+						searchkey:"label",
+						valuekey:"value",
+						url:"ljxhEdit",
+						onSelected : function(data){
+						 	ui.table("table_scrw").setCell(editid, 'ljxh',data.ljxh);
+						 	ui.table("table_scrw").setCell(editid, 'ljid',data.ljid);
+						 	ui.table("table_scrw").setCell(editid, 'ljbh',data.ljbh);
+						 	ui.table("table_scrw").setCell(editid, 'ljmc',data.ljmc);
+						 	ui.table("table_scrw").setCell(editid, 'ljms',data.ljms);
+						 }
+					}
+				]]></attribute>
+				<attribute name="formatoptions"><![CDATA[
+					{transform : "ljxhxf"}
+				]]></attribute> 
+		</column>
+		<column label="零件项号" name="ljxh" hidden="true"></column>
+		<!--<column label="零件图号" name="ljbh" editable="true" editrules="{required:true}" type="text" edittype="search">
+				 <attribute name="editoptions"><![CDATA[
+					{
+						displaykey:"label",
+						searchkey:"label",
+						valuekey:"value",
+						url:"ljEdit",
+						onSelected : function(data){
+						 	ui.table("table_scrw").setCell(editid, 'ljid',data.ljid);
+						 	ui.table("table_scrw").setCell(editid, 'ljbhxf',data.ljbh);
+						 	ui.table("table_scrw").setCell(editid, 'ljmc',data.ljmc);
+						 	ui.table("table_scrw").setCell(editid, 'ljms',' ');
+						 	ui.table("table_scrw").setCell(editid, 'ljms',data.ljms);
+						 }
+					}
+				]]></attribute>
+				<attribute name="formatoptions"><![CDATA[
+					{transform : "ljbh"}
+				]]></attribute> 
+		</column>-->
+		<column label="零件图号" name="ljbh"></column>
+		<column label="生产批号" name="scph"  editable="true"></column>
+		<column label="毛坯规格" name="wlgg" editable="true" editrules="{required:true}" type="text" edittype="search" 
+		>
+				<attribute name="editoptions"><![CDATA[
+					{
+						displaykey:"label",
+						searchkey:"label",
+						valuekey:"value",
+						url:"wlEdit",
+						onSelected : function(data){
+						 	ui.table("table_scrw").setCell(editid, 'wlid',data.wlid);
+						 	ui.table("table_scrw").setCell(editid, 'jgzt',data.jgztdm);
+						 	$('#'+"input_"+editid+"_mplhxf_typeahead").val("");
+						 	
+						 }
+						 //prepareparam: function(){
+						 //	return {ljbh:$('#'+"input_"+editid+"_ljbh").val()};
+						 //}
+					}
+				]]></attribute>
+				<attribute name="formatoptions"><![CDATA[
+					{transform : "wlgg"}
+				]]></attribute>
+		</column>
+		<column label="毛坯规格id" name="wlid" hidden="true"></column>
+		<column label="毛坯炉号" name="mplhxf" editable="true" editrules="{required:true}" type="text" edittype="search">
+				<attribute name="editoptions"><![CDATA[
+					{
+						displaykey:"label",
+						searchkey:"label",
+						valuekey:"value",
+						url:"lhEdit",
+						onSelected : function(data){
+						 	ui.table("table_scrw").setCell(editid, 'mplh',data.mplh);
+						 },
+						prepareparam: function(){
+						 	return {wlid:$('#'+"input_"+editid+"_wlgg").val()};
+						 }
+					}
+				]]></attribute>
+				 <attribute name="formatoptions"><![CDATA[
+					{transform : "mplhxf"}
+				]]></attribute>
+		</column>
+		<column label="毛坯炉号" name="mplh" hidden="true"></column>
+		<column label="加工状态" name="jgzt" type="dict" dictionary="JGZT" ></column>
+		<column label="计划数量" name="jgsl" editable="true" type="text" editrules="{required:true,number:true,digits:true,min:0}">
+		<attribute name="editoptions"><![CDATA[
+			{
+				onChange:function(){
+					var jgsl = ($('#'+editid+"_jgsl").val() * $('#'+editid+"_yxwc").val())/100;
+					//var pointflag = jgsl.toString().indexOf(".");
+					//	if(pointflag=='-1'){
+						ui.table("table_scrw").setCell(editid, 'jhsl',Math.floor(jgsl));
+					//	}else{
+					//	ui.table("table_scrw").setCell(editid, 'jhsl',jgsl.toString().substr(0,jgsl.toString().indexOf(".")));
+					//	}
+				},
+				onKeydown:function(){
+					var e = event || window.event || arguments.callee.caller.arguments[0];            
+					if(e && e.keyCode==13){     
+					 	var jgsl = ($('#'+editid+"_jgsl").val() * $('#'+editid+"_yxwc").val())/100;
+						//var pointflag = jgsl.toString().indexOf(".");
+						//if(pointflag=='-1'){
+						ui.table("table_scrw").setCell(editid, 'jhsl',Math.floor(jgsl));
+						//}else{
+						//ui.table("table_scrw").setCell(editid, 'jhsl',jgsl.toString().substr(0,jgsl.toString().indexOf(".")));
+						//}
+						return false;
+					}
+					
+				} 
+			}
+			]]></attribute>
+		</column>
+		<column label="允许误差(%)" name="yxwc" editable="true" editrules="{required:true,max:100,min:1}" type="text">
+		<attribute name="editoptions"><![CDATA[
+			{
+				onChange:function(){
+					var jgsl = ($('#'+editid+"_jgsl").val() * $('#'+editid+"_yxwc").val())/100;
+					 	//var pointflag = jgsl.toString().indexOf(".");
+						//if(pointflag=='-1'){
+						ui.table("table_scrw").setCell(editid, 'jhsl',Math.floor(jgsl));
+						//}else{
+						//ui.table("table_scrw").setCell(editid, 'jhsl',jgsl.toString().substr(0,jgsl.toString().indexOf(".")));
+						//}
+					
+				},
+				onKeydown:function(){
+					var e = event || window.event || arguments.callee.caller.arguments[0];            
+					if(e && e.keyCode==13){
+					 	var jgsl = ($('#'+editid+"_jgsl").val() * $('#'+editid+"_yxwc").val())/100;
+					 	//var pointflag = jgsl.toString().indexOf(".");
+						//if(pointflag=='-1'){
+						ui.table("table_scrw").setCell(editid, 'jhsl',Math.floor(jgsl));
+						//}else{
+						//ui.table("table_scrw").setCell(editid, 'jhsl',jgsl.toString().substr(0,jgsl.toString().indexOf(".")));
+						//}
+						return false;
+					}
+				} 
+			}
+			]]></attribute>
+		</column>
+		
+		<column label="零件名称" name="ljmc"></column>
+		<column label="零件描述" name="ljms"></column>
+		<column label="加工数量" name="jhsl"></column>
+		<column label="加工开始日期" name="jgksrq"  editable="true" type="date" width="130"></column>
+		<column label="加工完成日期" name="jgwcrq"  editable="true" type="date" width="130"></column>
+		<!-- <column label="任务录入日期" name="scrwlrsj" type="date" width="130"></column> -->
+		<column label="任务状态" name="scrwztdm" type="dict" dictionary="RWZT"></column>
+		<!-- <column label="任务来源" name="scrwlydm" type="dict" dictionary="RWLY"></column> -->
+		<column label="分批状态" name="scrwfpztdm" type="dict" dictionary="FPZT"></column>
+		<column label="操作" type="operation">
+			<attribute name="formatoptions"><![CDATA[
+					[
+						{
+							name:"edit",
+							icon:"icon-edit",
+							label:"编辑",
+							click:edit_Row
+						},
+						{
+							name:"del",
+							icon:"icon-delete",
+							label:"删除",
+							click:del_scrw
+						}
+					]
+				]]></attribute>
+		</column>
+		<column label="新增标记" name="addSign"  hidden="true" ></column>
+		<column label="生产任务ID" name="scrwid" key="true" hidden="true"></column>
+		<column label="零件ID" name="ljid" hidden="true"></column>
+		<!-- <column label="零件图号" name="ljbhxf" hidden="true"></column> -->
+		<table-actions>
+			<button name="rwfpBtn" label="任务分批"  type="button" context="primary" onClick="rwfpBtnClick"></button>
+			<button name="rwgzBtn" label="任务跟踪"  type="button" context="primary" onClick="rwgzBtnClick"></button>
+			<button name="zzrwBtn" label="终止任务"  type="button" context="primary" onClick="zzrwBtnClick"></button>
+		</table-actions>
+	</table>
+	
+	<modal name="qyeryModal" heading="查询生产任务" sizing="large" show="false" keyboard="true"  onShown="resetQueryWindow">
+		<modal-body>
+			<form name="qyeryScrwForm"  horizontal="true" layoutconstraint="md-offset:1">
+				<form-body>
+					<form-group>
+						<label for="query_ljbh" text="零件图号" layoutconstraint="md:3;sm:3"/>
+						<text name="query_ljbh" placeholder="请输入零件图号" layoutconstraint="md:7;sm:7;"/>
+					</form-group>
+					<form-group>
+						<label for="query_ljxh" text="零件项号" layoutconstraint="md:3;sm:3"/>
+						<text name="query_ljxh" placeholder="请输入零件项号" layoutconstraint="md:7;sm:7;"/>
+					</form-group>
+					<form-group>
+						<label for="query_ljmc" text="零件名称" layoutconstraint="md:3;sm:3"/>
+						<text name="query_ljmc" placeholder="请输入零件名称" validate="{required:true}" layoutconstraint="md:7;sm:7;"/>
+					</form-group>
+					<form-group>
+						<label for="query_jgksstart" text="任务加工开始日期" layoutconstraint="md:3"/>
+						<bunch layoutconstraint="md:9">
+							<input-inline width="medium">
+							<date name="query_jgksstart" placeholder="请输入起始日期" validate="{required:true}"/>
+							</input-inline>
+							<plaintext text="-"/>
+							<input-inline width="medium">
+							<date name="query_jgksend" placeholder="请输入结束日期" validate="{required:true}"/>
+							</input-inline>
+						</bunch>
+ 					</form-group>
+					<form-group>
+						<label for="query_jgjsstart" text="任务加工完成时间" layoutconstraint="md:3"/>
+						<bunch layoutconstraint="md:9">
+							<input-inline width="medium">
+							<date name="query_jgjsstart" placeholder="请输入起始日期" validate="{required:true}"/>
+							</input-inline>
+							<plaintext text="-"/>
+							<input-inline width="medium">
+							<date name="query_jgjsend" placeholder="请输入结束日期" validate="{required:true}"/>
+							</input-inline>
+						</bunch>
+ 					</form-group>
+					<!-- <form-group>
+						<label for="query_rwlrstart" text="任务录入日期" layoutconstraint="md:3"/>
+						<bunch layoutconstraint="md:9">
+							<input-inline width="medium">
+							<date name="query_rwlrstart" placeholder="请输入起始日期" validate="{required:true}"/>
+							</input-inline>
+							<plaintext text="-"/>
+							<input-inline width="medium">
+							<date name="query_rwlrend" placeholder="请输入结束日期" validate="{required:true}"/>
+							</input-inline>
+						</bunch>
+ 					</form-group> -->
+					<form-group>
+						<label for="query_rwzt" text="任务状态" layoutconstraint="md:3"/>
+					    <select name="query_rwzt" validate="{required:true}" dictionary="RWZT"  placeholder="请选择任务状态" layoutconstraint="md:4;"></select>
+ 					</form-group>
+					<!-- <form-group>
+						<label for="query_rwly" text="任务来源" layoutconstraint="md:3"/>
+						<select name="query_rwly" validate="{required:true}" dictionary="RWLY"  placeholder="请选择任务来源" layoutconstraint="md:4;"></select>
+ 					</form-group> -->
+					<form-group>
+						<label for="query_fpzt" text="分批状态" layoutconstraint="md:3"/>
+						<select name="query_fpzt" validate="{required:true}" dictionary="FPZT"  placeholder="请选择分批状态" layoutconstraint="md:4;"></select>
+ 					</form-group>
+				</form-body>
+			</form>
+		</modal-body>
+		<modal-footer>
+				<button name="resetqyeryModalClick" label="重置" type="button" onClick="resetQueryWindow"></button>
+				<button name="closeqyeryModalClick" label="取消" type="button" onClick="closeQueryWindow"></button>
+				<button name="qyeryModalClick" label="查询" type="button" context="primary" onClick="queryBtnClick"></button>
+				
+		</modal-footer>
+	</modal>
+	<attribute name="javascript">
+	<![CDATA[
+		
+		document.onkeydown=function(event){            
+			var e = event || window.event || arguments.callee.caller.arguments[0];            
+			if(e && e.keyCode==13){     
+			 	saveBtnClick();//回车保存
+			}   
+			if(e && e.keyCode==27){     
+				ui.table("table_scrw").restoreRow(editid);
+			 	editid = "";//ESC退出编辑
+			}     
+		}; 
+		//记录变量
+		var editid = "";
+		var editljid = "";
+		var editjgsl = "";
+		var editjhsl = "";
+		var editjgzt = "";
+		var edityxwc = "";
+		var editscph = "";
+		var editjgksrq = "";
+		var editjgwcrq = "";
+		function edit_Row(name,rowid){
+			dbltable_scrwClickrow(rowid,'') ;
+		}
+		//双击进入修改
+		function dbltable_scrwClickrow(rowid,status) {
+			
+			//变量id不为空,并且数值发生变化提示保存
+			if(("" != editid&&rowid!=editid)&&(editljid != ui.table("table_scrw").getCell(editid,"ljid")||editjgsl != $('#'+editid+"_jgsl").val()||editjgksrq != $('#'+editid+"_jgksrq").val()||editjgwcrq != $('#'+editid+"_jgwcrq").val()
+			||editscph != $('#'+editid+"_scph").val()||editjhsl != $('#'+editid+"_jhsl").val()||editjgzt != ui.table("table_scrw").getCell(editid,"jgzt"))) {
+				ui.confirm("您是否要保存该条记录？", function(data){
+				if(data){
+						saveBtnClick();
+					}else{
+						ui.table("table_scrw").restoreRow(editid);
+						editid = "";
+						editljid = "";
+						editljbh = "";
+						editjgsl = "";
+						editjhsl = "";
+						edityxwc = "";
+						editjgzt = "";
+						editscph = "";
+						editjgksrq = "";
+						editjgwcrq = "";
+						if('10'!=ui.table("table_scrw").getCell(rowid,"scrwztdm"))
+						{
+							ui.warn("当前任务已经开始执行无法编辑!", "提示!");
+						//}else if('30'!=ui.table("table_scrw").getCell(rowid,"scrwlydm"))
+						//{
+						//	ui.warn("当前任务非录入任务,无法编辑!", "提示!");
+						}else{
+							ui.table("table_scrw").editRow(rowid);
+							editid = rowid;
+							editljid = ui.table("table_scrw").getCell(editid,"ljid");
+							editljbh = ui.table("table_scrw").getCell(editid,"ljbh");
+							editjhsl = ui.table("table_scrw").getCell(editid,"jhsl");
+							editjgsl = $('#'+editid+"_jgsl").val();
+							edityxwc = $('#'+editid+"_yxwc").val();
+							editscph = $('#'+editid+"_scph").val();
+							editjgksrq = $('#'+editid+"_jgksrq").val();
+							editjgwcrq = $('#'+editid+"_jgwcrq").val();
+						}
+					}
+				});
+			}else {
+				//未变化直接进入编辑
+				
+				if(rowid!=editid)
+				{
+					ui.table("table_scrw").restoreRow(editid);
+					editid = "";
+					editljid = "";
+					editljbh = "";
+					editjgsl = "";
+					editjhsl = "";
+					edityxwc = "";
+					editjgzt = "";
+					editscph = "";
+					editjgksrq = "";
+					editjgwcrq = "";
+					if('10'!=ui.table("table_scrw").getCell(rowid,"scrwztdm"))
+					{
+						ui.warn("当前任务已经开始执行无法编辑!", "提示!");
+						editid = "";
+						editljid = "";
+						editljbh = "";
+						editjgsl = "";
+						editjhsl = "";
+						edityxwc = "";
+						editjgzt = "";
+						editscph = "";
+						editjgksrq = "";
+						editjgwcrq = "";
+					//}else if('30'!=ui.table("table_scrw").getCell(rowid,"scrwlydm"))
+					//{
+					//	ui.warn("当前任务非录入任务,无法编辑!", "提示!");
+					}else{
+						ui.table("table_scrw").editRow(rowid);
+						editid = rowid;
+						editljid = ui.table("table_scrw").getCell(editid,"ljid");
+						editljbh = ui.table("table_scrw").getCell(editid,"ljbh");
+						editjhsl = ui.table("table_scrw").getCell(editid,"jhsl");
+						editjgsl = $('#'+editid+"_jgsl").val();
+						edityxwc = $('#'+editid+"_yxwc").val();
+						editjgzt = ui.table("table_scrw").getCell(editid,"jgzt");
+						editscph = $('#'+editid+"_scph").val();
+						editjgksrq = $('#'+editid+"_jgksrq").val();
+						editjgwcrq = $('#'+editid+"_jgwcrq").val();
+					}
+				}
+			}
+		}
+		
+		function rwfpBtnClick() {
+			var rows = ui.table("table_scrw").getSelectedRows();
+			if(rows.length < 1) {
+				ui.alert("请选择一条任务进行分批！");
+				return;
+			}
+			if('40'==ui.table("table_scrw").getCell(rows[0],"scrwztdm"))
+			{
+				ui.warn("当前任务已经终止，无法分批!", "提示!");
+				return;
+			}
+			var mplh = ui.table("table_scrw").getCell(rows[0],"mplh");
+			//任务分批
+			var url = ui.getRealUrl("/pcfp/index") + "?scrwid=" + rows[0];
+			window.open(url);
+		}
+		function rwgzBtnClick() {//任务跟踪
+			var rows = ui.table("table_scrw").getSelectedRows();
+			if(rows.length < 1) {
+				ui.alert("请选择一条任务！");
+				return;
+			}
+			
+			window.location.href= ui.getUrl("/que/jdgz/query_jdgz") + "?scrwbh=" + ui.table("table_scrw").getCell(rows[0],"scrwbh");
+		}
+		function zzrwBtnClick() {//终止任务
+			
+			var rows = ui.table("table_scrw").getSelectedRows();
+			if(rows.length < 1) {
+				ui.alert("请选择一条任务！");
+				return false;
+			}
+			if('40'==ui.table("table_scrw").getCell(rows[0],"scrwztdm"))
+			{
+				ui.warn("当前任务已经终止，请勿重复操作!", "提示!");
+				return;
+			}
+			if('1'==ui.table("table_scrw").getCell(rows[0],"addSign"))
+	 		{
+	 			ui.warn("请先保存此数据", "提示!");
+	 			return false;
+	 		}
+	 		
+	 		var zscrwbh = ui.table("table_scrw").getCell(rows[0],"scrwbh");
+	 		var zljbh = ui.table("table_scrw").getCell(rows[0],"ljbh");
+	 		var zljmc = ui.table("table_scrw").getCell(rows[0],"ljmc");
+	 		var scph = ui.table("table_scrw").getCell(rows[0],"scph");
+	 		var zscrwid = rows[0];
+	 		ui.confirm("您是否要终止该生产任务？", function(data){
+				if(data){
+					$.ajax({
+		             type: "POST",
+		             url:  ui.getRealUrl("/scrw/terminateTask"),
+		             async: false,
+		             data: {scrwid : zscrwid,scrwbh:zscrwbh,ljbh:zljbh,ljmc:zljmc,scph:scph},
+		             success: function(data){
+		             	ui.table("table_scrw").reload();
+		             }
+		         });
+				}else{
+					
+				}
+			});
+		}
+		//加载结束初始化
+		function table_editreset() {
+			editid = "";
+		}
+		
+		//导入刷新
+		function drsxBtnClick() {
+			$.ajax({
+	             type: "POST",
+	             url:   ui.getRealUrl("importAndRefresh"),
+	             async: false,
+	             data: {},
+	             success: function(data){
+	             	if(data > 0 ){
+	             		ui.success("成功导入" + data  + "条数据");
+		             	ui.table("table_scrw").reload();
+	             	}else{
+	             		ui.info("没有数据可以导入");
+	             	}
+	             },
+	             error: function(){
+	             	ui.error("导入刷新出现异常");
+	             }
+	         });
+			
+		}
+		
+		//新增一行生产任务
+		function addScrwRow() {
+			if("" != editid&&(editljid != ui.table("table_scrw").getCell(editid,"ljid")||editjgsl != $('#'+editid+"_jgsl").val()||editjgksrq != $('#'+editid+"_jgksrq").val()||editjgwcrq != $('#'+editid+"_jgwcrq").val()
+			||editjhsl != $('#'+editid+"_jhsl").val())) {
+				ui.confirm("您是否要保存该条记录？", function(data){
+				if(data){
+						saveBtnClick();
+					}else{
+						ui.table("table_scrw").restoreRow(editid);
+						var rowid = (new Date()).getTime();	
+						ui.table("table_scrw").addRow(rowid,{scrwid: rowid,ljid:1 ,scrwztdm:"10" ,yxwc:"0" ,scrwlydm:"30",scrwfpztdm:"10",jgzt:"",addSign:"1",jgsl:""},"first");
+						ui.table("table_scrw").editRow(rowid);
+						
+						
+						editid = rowid;
+						editljid = ui.table("table_scrw").getCell(editid,"ljid");
+						editjhsl = ui.table("table_scrw").getCell(editid,"jhsl");
+						editjgsl = $('#'+editid+"_jgsl").val();
+						edityxwc = $('#'+editid+"_yxwc").val();
+						editjgzt = ui.table("table_scrw").getCell(editid,"jgzt");
+						editjgksrq = $('#'+editid+"_jgksrq").val();
+						editjgwcrq = $('#'+editid+"_jgwcrq").val();
+					}
+				});
+			}else {
+				if('1'==ui.table("table_scrw").getCell(editid,"addSign"))
+				{
+					ui.warn("请先保存当前任务!", "提示!");
+					return;
+				}
+				ui.table("table_scrw").restoreRow(editid);
+				var rowid = (new Date()).getTime();	
+				console.log(2);
+				ui.table("table_scrw").addRow(rowid,{scrwid: rowid,ljid:1 ,scrwztdm:"10" ,scrwlydm:"30",yxwc:"",scrwfpztdm:"10",addSign:"1",jgzt:"",jgsl:""},"first");
+				ui.table("table_scrw").editRow(rowid);
+				editid = rowid;
+				editljid = ui.table("table_scrw").getCell(editid,"ljid");
+				editjhsl = ui.table("table_scrw").getCell(editid,"jhsl");
+				editjgsl = $('#'+editid+"_jgsl").val();
+				var yxwc = $('#'+editid+"_yxwc").val();
+				edityxwc = $('#'+editid+"_yxwc").val();
+				editjgzt = ui.table("table_scrw").getCell(editid,"jgzt");
+				editjgksrq = $('#'+editid+"_jgksrq").val();
+				editjgwcrq = $('#'+editid+"_jgwcrq").val();
+			}
+			
+			//ui.table("table_scrw").selectRow(rowid);
+		}
+		// scrwlrsj:(new Date()).toLocaleString( ),
+		function queryjgrw_Clickrow(rowid,status) {
+			openQueryWindow();
+		}
+		function openQueryWindow() {
+	    	ui.modal("qyeryModal").show();
+	    }
+	    function closeQueryWindow() {
+	    	ui.modal("qyeryModal").hide();
+	    }
+	    
+   	    function resetQueryWindow() {
+	    	 $('#qyeryScrwForm')[0].reset();
+	    	 ui.select('query_rwzt').val('');
+			 ui.select('query_rwly').val('');
+			 ui.select('query_fpzt').val('');
+	    }
+	    
+		var rowid;
+		//删除生产任务
+	 	function del_scrw(name,rowid){
+	 		if('1'==ui.table("table_scrw").getCell(rowid,"addSign"))
+	 		{
+	 			ui.table("table_scrw").removeRow(rowid);
+	 			editid = "";
+	 			return false;
+	 		}
+	 		if('10'==ui.table("table_scrw").getCell(rowid,"scrwztdm"))
+	 		{
+	 			ui.confirm("您确定要删除该条记录吗？", function(data){
+					if(data){
+						$.ajax({
+			             type: "POST",
+			             url:  ui.getRealUrl("/scrw/del_scrw"),
+			             async: false,
+			             data: {data_list : rowid},
+			             success: function(data){
+			             	ui.table("table_scrw").reload();
+			             }
+			         });
+					}else{
+						
+					}
+				});
+	 		}else{
+	 			ui.warn("该数据已经分批，无法删除!", "提示!");
+	 		}
+	 		
+	 		
+			
+		}
+		
+		//保存
+		function saveBtnClick(){
+			if(!ui.table("table_scrw").validate(editid))
+			{
+				ui.warn("请检查录入数据!", "提示!");
+				return false;
+			}
+			var data_list= [];
+			if(""!=editid)
+			{
+				var data_row = {};
+				data_row.ljid = ui.table("table_scrw").getCell(editid,"ljid");
+				data_row.ljbh = ui.table("table_scrw").getCell(editid,"ljbh");
+				data_row.ljxh = ui.table("table_scrw").getEditRowsData([editid])[0].ljxhxf;
+				data_row.wlid = ui.table("table_scrw").getCell(editid,"wlid");
+				//data_row.sjwlkcid = ui.table("table_scrw").getCell(editid,"mplh");
+				data_row.mplh = ui.table("table_scrw").getCell(editid,"mplh");
+				data_row.scph = $('#'+editid+"_scph").val();
+				data_row.ljbh = ui.table("table_scrw").getCell(editid,"ljbhxf");
+				data_row.jhsl = ui.table("table_scrw").getCell(editid,"jhsl");
+				data_row.jgsl = $('#'+editid+"_jgsl").val();
+				data_row.yxwc = $('#'+editid+"_yxwc").val();
+				data_row.jgzt = ui.table("table_scrw").getCell(editid,"jgzt");
+				data_row.jgksrq = $('#'+editid+"_jgksrq").val();
+				data_row.jgwcrq = $('#'+editid+"_jgwcrq").val();
+				if((new Date(data_row.jgksrq))>(new Date(data_row.jgwcrq)))
+				{
+					ui.warn("开始时间必须小于结束时间!", "提示!");
+					return false;
+				}
+				data_row.addSign = ui.table("table_scrw").getCell(editid,"addSign");
+				data_row.scrwid = editid;
+				data_list.push(data_row);
+				$.ajax({
+		             type: "POST",
+		             url:  ui.getRealUrl("/scrw/update_scrw"),
+		             async: false,
+		             data: {data_list : JSON.stringify(data_list)},
+		             success: function(data){
+		                editid = "";
+		             	ui.table("table_scrw").reload();
+		             }
+		         });
+			}
+			
+		}
+		
+		//查询
+		function queryBtnClick(){
+			var data_row = {};
+			data_row.query_ljmc = $('#query_ljmc').val();
+			data_row.query_ljbh = $('#query_ljbh').val();
+			data_row.query_ljxh = $('#query_ljxh').val();
+			data_row.query_jgksstart = $('#query_jgksstart').val();
+			data_row.query_jgksend = $('#query_jgksend').val();
+			data_row.query_jgjsstart = $('#query_jgjsstart').val();
+			data_row.query_jgjsend = $('#query_jgjsend').val();
+			if((new Date(data_row.query_jgksstart))>(new Date(data_row.query_jgksend))||(new Date(data_row.query_jgjsstart))>(new Date(data_row.query_jgjsend)))
+			{
+				ui.warn("任务计划时间区间开始时间必须小于结束时间!", "提示!");
+				return false;
+			}
+			data_row.query_rwlrstart = $('#query_rwlrstart').val();
+			data_row.query_rwlrend = $('#query_rwlrend').val();
+			if((new Date(data_row.query_rwlrstart))>(new Date(data_row.query_rwlrend)))
+			{
+				ui.warn("任务录入时间区间开始时间必须小于结束时间!", "提示!");
+				return false;
+			}
+			data_row.query_rwzt = ui.select('query_rwzt').val();
+			//data_row.query_rwly = ui.select('query_rwly').val();
+			data_row.query_fpzt = ui.select('query_fpzt').val();
+			ui.table("table_scrw").search(data_row);
+			closeQueryWindow();
+		}
+	]]>
+	</attribute>
+</view>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<category name="SCRWJKDRZT" label="批次计划状态代码">
+	<field value="10" label="未导入"/>
+	<field value="20" label="已导入"/>
+</category>

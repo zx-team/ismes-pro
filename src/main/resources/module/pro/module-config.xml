@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="pro" version="1.0.0" category="system">
+	<information>
+		<name>生产</name>
+		<vendor>
+			<name>Isesol isMES</name>
+			<url>http://www.isesol.com/</url>
+		</vendor>
+		<description>produce module</description>
+		<license>AGPL</license>
+	</information>
+	<activities>
+		<activity name="pcfp" dialect="java"  roles="PLAN_MANAGEMENT_ROLE" class="com.isesol.mes.ismes.pro.activity.PCFPActivity"/>
+		<activity name="scrw" dialect="java"  roles="PLAN_MANAGEMENT_ROLE" class="com.isesol.mes.ismes.pro.activity.ScrwActivity"/>
+		<activity name="service" dialect="java"  class="com.isesol.mes.ismes.pro.service.ScrwService"/>
+	</activities>
+	<roles>
+		<role name="PLAN_MANAGEMENT_ROLE" label="生产计划人员_生产管理" description="计划制订、计划排程、进度跟踪" />
+	</roles>
+	<menus>
+		<!-- 生产计划（一级） -->
+		<category name="produce_plan" label="生产计划" icon="#ff6953;Production_planning"  weight="3"/>
+		<menu name="planning_customization" label="计划制定" activity="scrw" activity-method="query_scrw" 
+ 			 category="produce_plan" roles="PLAN_MANAGEMENT_ROLE" description="计划制定"  weight="10"/>
+	</menus>
+	<services>
+		<service name = "scrwListByPcjhztService" activity = "service" activity-method = "scrwListByPcjhzt"/>
+		<service name = "scrwListByScrwztService" activity = "service" activity-method = "scrwListByScrwzt"/>
+		<service name = "scrwpcListByRwidService" activity = "service" activity-method = "scrwpcListByRwidAndZtdm"/>
+		<service name = "scrwAndPcInfoByPcidService" activity = "service" activity-method = "scrwAndPcInfoByPcid"/>
+		<service name = "proService_scrw" activity = "service" activity-method = "queryService_scrw"/>
+		<service name = "proService_pcxx" activity = "service" activity-method = "queryService_pcxx"/>
+		<service name = "proService_pcxxfy" activity = "service" activity-method = "queryService_pcxxfy"/>
+		<service name = "proService_pcxxbyid" activity = "service" activity-method = "queryService_pcxxbyid"/>
+		<service name = "proService_updateScrwpczt" activity = "service" activity-method = "updateScrwpcjhzt"/>
+		<service name = "proserver_scrwpcListByPcidService" activity = "service" activity-method = "scrwpcListByPcid"/>
+		<service name = "proServiceScrwpcByScrwpcbhService" activity = "service" activity-method = "getScrwpcidByScrwpcbh"/>
+		<service name = "proServiceScrwByScrwpcbhService" activity = "service" activity-method = "getScrwByScrwpcbh"/>
+		<service name = "proServiceScrwpcxxService" activity = "service" activity-method = "getScrwpcxx"/>
+		<service name = "proServicePcbhByPcidService" activity = "service" activity-method = "getScrwpcbhByScrwpcid"/>
+		<service name = "proService_updateScrwzt" activity = "service" activity-method = "updateScrwzt"/>
+		<service name = "proService_scrwByScrwid" activity = "scrw" activity-method = "scrwByScrwid"/>
+		<service name = "proService_updateScrwpcztAndScrwzt" activity = "service" activity-method = "updateScrwpczt"/>
+		<service name = "proService_getScrwpcxxBypcid" activity = "service" activity-method = "getScrwpcxxBypcid"/>
+		<service name = "proService_getScbh" activity = "service" activity-method = "query_scbh"/>
+		<service name = "proService_getScph" activity = "service" activity-method = "query_scph"/>
+		<service name = "proService_queryJgztByPcid" activity = "service" activity-method = "queryJgztByPcid"/>
+		<service name = "proService_queryProcessingScrw" activity = "service" activity-method = "queryProcessingScrw"/>
+		<service name = "proService_query_scrw" activity = "service" activity-method = "query_scrw"/>
+		<service name = "proService_query_scrwandpic" activity = "service" activity-method = "query_scrwandpic"/>
+		<service name = "proService_scrwInfoByPcid" activity = "service" activity-method = "scrwInfoByPcid"/>
+	</services>
+</module>

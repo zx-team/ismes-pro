@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<category name="FPZT" label="分批状态"  description="分批状态">
+	<field name="" value="10" label="未分批" parent="" state="valid"/>
+	<field name="" value="20" label="部分下发" parent="" state="valid"/>
+	<field name="" value="30" label="全部下发" parent="" state="valid"/>
+</category>

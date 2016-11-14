@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<category name="RWLY" label="任务来源"  description="任务来源">
+	<field name="" value="10" label="ERP" parent="" state="valid"/>
+	<field name="" value="20" label="云工厂" parent="" state="valid"/>
+	<field name="" value="30" label="录入" parent="" state="valid"/>
+</category>

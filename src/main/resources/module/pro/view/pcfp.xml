@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="pcfp" title="批次分配" onReady="testViewReady">
+	<hidden name="scrwid" bind="scrw.scrwid"></hidden>
+	<hidden name="ljid" bind="scrw.ljid"></hidden>
+	<hidden name="ljtp_url" bind="partsInfo.url"></hidden>
+	<hidden name="jgsl" bind="scrw.jgsl"></hidden>
+	<hidden name="pcjhksrq" bind="scrw.jgksrq"></hidden>
+	<hidden name="pcjhwcrq" bind="scrw.jgwcrq"></hidden>
+	<hidden name="scph" bind="scrw.scph"></hidden>
+	
+<!-- 	<normal-actions>
+		<button name="showModal" label="库存" type="button" icon="icon-Stock" onClick="kcxx_modal_func"/>
+	</normal-actions> -->
+	<panel layoutconstraint="md:12;">
+		<panel-body>
+		
+			<bunch layoutconstraint="md:2">
+				<image shape="thumbnail" name="image_lj" popshow="true" src="" layoutconstraint="md:6"  />
+			</bunch>
+		
+			<bunch layoutconstraint="md:2">
+				<plaintext name="chn_ljmc" text="零件名称 " align = "center" type="strong" layoutconstraint="md:12"/>
+				<plaintext bind="partsInfo.ljmc" align = "center" layoutconstraint="md:12"/>
+			</bunch>
+			<bunch layoutconstraint="md:2">
+				<plaintext name="chn_ljbh" text="零件图号 " align = "center" type="strong" layoutconstraint="md:12"/>
+				<plaintext bind="partsInfo.ljbh" align = "center" layoutconstraint="md:12"/>
+			</bunch>
+			<bunch layoutconstraint="md:1">
+				<plaintext name="chn_rwsl" text="任务数量 " align = "center" type="strong" layoutconstraint="md:12"/>
+				<plaintext name = "jgsl" bind="scrw.jgsl" align = "center" layoutconstraint="md:12"/>
+			</bunch>
+			<bunch layoutconstraint="md:1">
+				<plaintext name="chn_zxsl" text="装箱数量" align = "center" type="strong" layoutconstraint="md:12"/>
+				<plaintext bind="partsInfo.zxsl" align = "center" layoutconstraint="md:12"/>
+			</bunch>
+			
+			<bunch layoutconstraint="md:1">
+				<plaintext name="chn_ljkcsl" text="零件库存" align = "center" type="strong" layoutconstraint="md:12"/>
+				<plaintext bind="ljkcsl" align = "center" layoutconstraint="md:12"/>
+			</bunch>
+			
+			<bunch layoutconstraint="md:1">
+				<plaintext name="chn_wlkcsl" text="物料库存" align = "center" type="strong" layoutconstraint="md:12"/>
+				<plaintext bind="wlkcsl" align = "center" layoutconstraint="md:12"/>
+			</bunch>
+			
+			<bunch layoutconstraint="md:1">
+				<plaintext name="chn_kssj" text="加工开始日期 " align = "center" type="strong" layoutconstraint="md:12"/>
+				<plaintext format="YYYY-MM-dd" bind="scrw.jgksrq" align = "center" layoutconstraint="md:12"/>
+			</bunch>
+			<bunch layoutconstraint="md:1">
+				<plaintext name="chn_wcsj" text="加工完成日期 " align = "center" type="strong" layoutconstraint="md:12"/>
+				<plaintext format="YYYY-MM-dd" bind="scrw.jgwcrq" align = "center" layoutconstraint="md:12"/>
+			</bunch>
+		</panel-body>
+	</panel>
+	
+	<panel layoutconstraint="md:12;">
+		<panel-body>
+			<progressbar name="批次进度" showLabel="true" sizing="mini" labelalign="bottom" >
+				<progressbar name="p1" label="已下发" showLabel="true" labelalign="bottom" />
+				<progressbar name="p2" label="未下发" showLabel="true" labelalign="bottom" />
+				<progressbar name="p3" label="未分批" showLabel="true" context = "danger" labelalign="bottom" />
+			</progressbar>
+		</panel-body>
+	</panel>
+	
+	<panel layoutconstraint="md:12;">
+		<panel-body>
+			<form name="form-inline-pcfp" inline="true">
+				<form-body>
+					<form-group>
+						<label for="dyjgsl" text="定义加工数量" />
+						<number name="dyjgsl" placeholder="定义加工数量"
+								readonly="true" format="###,###" 
+								validate="{required:true,digits:true,min:0}"/>
+					</form-group>
+					<form-group>
+						<label for="dyjgpc" text="定义加工批次" />
+						<number name="dyjgpc" placeholder="定义加工批次"
+							readonly="true" format="###,###"
+							validate="{required:true,digits:true,min:0}"/>
+					</form-group>
+				</form-body>
+				<form-actions>
+					<button name="button" label="提交" type="button" context="primary" onClick="fpBtnClick"/>
+					<!-- <button name="reset" label="重置" type="reset" /> -->
+				</form-actions>
+			</form>
+		</panel-body>
+	</panel>
+	
+	
+	<panel layoutconstraint="md:12;">
+		<panel-body>
+		
+		<table name="table-pcfp" showrownum="false" scroll="false" onSelectRow="testTableClickrow"
+			onLoaded ="tableLoaded_func" editurl="updatePc" multiselect="false" url = "table?scrwid=${scrw.scrwid}" 
+			showpager="false" pagesize = "200" onDblClickRow = "double_select_func" height="300">
+			<column label="生产批号" name="pcmc"  editable="false"/>
+			<column label="批次id" name="scrwpcid" editable="false" key="true" hidden = "true"/>
+			<column label="批次数量" name="pcsl" width="100"  type="number"  editable="true"/>
+			<column label="批次计划开始日期" name="pcjhksrq" type="date"  editable="true" width="70%"/> 
+			<column label="批次计划完成日期" name="pcjhwcrq" type="date"  editable="true" width="70%"/> 
+			<column label="批次计划状态" name="pcjhztdm" type="dict" dictionary="PCJH" editable="false"  width="70%"/> 
+			<column label="操作" name="action" editable="true" type="operation" width="100"> <!--  formatter="action_func" -->
+				<attribute name="formatoptions"><![CDATA[
+					[
+						
+						/**{
+							name:"pc_edit",
+							icon:"icon-edit",
+							label:"编辑",
+							click:handleEdit
+						},**/
+						{
+							name:"pc_xf",
+							icon:"icon-Issued",
+							label:"下发",
+							click:handleXf,
+							visible:function(rowid,rowdata) {
+								return rowdata.pcjhztdm != '90';
+							}
+						},
+						{
+							name:"pc_del",
+							icon:"icon-delete",
+							label:"删除",
+							click:handleDelete,
+							visible:function(rowid,rowdata) {
+								return rowdata.pcjhztdm != '90';
+							}
+						}
+					]
+				]]></attribute>
+				</column>
+			<table-actions>
+				<button name="pfjhBtn" label="返回" onClick="goback"
+					tooltip="返回"></button> 
+			</table-actions>
+		</table>
+		</panel-body>
+	</panel>
+	
+	<modal name="kcxxModal" heading="库存信息" sizing="large" show="false" keyboard="true">
+		<modal-body>
+			<tabs name="kcxx_tabs" >
+				<tab-nav position="top" tabdrop="true">
+					<tab name="ljkc_tab" label="零件库存"  active="true"/>
+					<tab name="wlkc_tab" label="物料库存" />
+				</tab-nav>
+			<tab-content name = "ljkc_tab">
+				<panel layoutconstraint="md:12;">
+				<panel-body>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="零件图号  " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="partsInfo.ljbh" align = "left" />
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="零件名称  " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="partsInfo.ljmc" align = "left" />
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="零件型号 " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="partsInfo.ljlbmc" align = "left"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="零件材质编号 " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="partsInfo.clbh" align = "left" />
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="当前库存 " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="ljkcsl" align = "left" />
+					</bunch>
+				</panel-body>
+				</panel>
+				<panel layoutconstraint="md:12;sm:12">
+				<panel-body>
+					<table name="table-partsStockModal" showrownum="false" scroll="false" 
+						editurl="" multiselect="false" url = "ljkcTable?ljid=${scrw.ljid}" 
+						showpager="false" pagesize = "200">
+						<column label="库存数量" name="kcsl" width = "250" />
+						<column label="库房名称" name="kfmc" width = "250" />
+						<column label="库位名称" name="kwmc" width = "250" />
+					</table>
+				</panel-body>
+				</panel>
+			</tab-content>
+			
+			<tab-content name = "wlkc_tab">
+				<panel layoutconstraint="md:12;">
+				<panel-body>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="物料编号  " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="materielInfo.wlbh" align = "left" />
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="物料名称  " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="materielInfo.wlmc" align = "left" />
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="规格型号 " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="materielInfo.wlgg" align = "left" />
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="计量单位 " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="materielInfo.wldwmc" align = "left" />
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext text="当前库存 " align = "right" type="strong"/>
+					</bunch>
+					<bunch layoutconstraint="md:3">
+						<plaintext bind="wlkcsl" align = "left" />
+					</bunch>
+				</panel-body>
+				</panel>
+				<panel layoutconstraint="md:12;sm:12">
+				<panel-body>
+					<table name="table-materielStockModal" showrownum="false" scroll="false" 
+						editurl="" multiselect="false" url = "wlkcTable?wlid=${materielInfo_wlid}" 
+						showpager="false" pagesize = "200">
+						<column label="库存数量" name="kcsl"  />
+						<column label="库房名称" name="kfmc" />
+						<column label="库位名称" name="kwmc" />
+					</table>
+				</panel-body>
+				</panel>
+			</tab-content>
+		</tabs>
+	</modal-body>
+	</modal>
+	
+	<attribute name="javascript">
+	<![CDATA[
+		function goback(){
+			window.opener.location.href = window.opener.location.href;
+  			window.opener=null;
+			window.open('','_self');
+			window.close();
+		}
+	
+		function testViewReady() {
+			var scrwid = ui.hidden("scrwid").val();
+			progressbar();
+			
+			$("#chn_ljmc").append("</br>"); 
+			$("#chn_ljbh").append("</br>"); 
+			$("#chn_rwsl").append("</br>"); 
+			$("#chn_kcsl").append("</br>"); 
+			$("#chn_kssj").append("</br>"); 
+			$("#chn_wcsj").append("</br>"); 
+			
+			var ljtp_url = ui.hidden("ljtp_url").val();
+			ui.image("image_lj").attr("src",ljtp_url);	
+			
+			ui.number("dyjgsl").val(ui.hidden("jgsl").val());
+			ui.number("dyjgpc").val(1);
+			
+			
+		}
+		
+		//进度条
+		function progressbar(){
+			var scrwid = ui.hidden("scrwid").val();
+			$.ajax({
+	             type: "GET",
+	             url:   ui.getRealUrl("progressInfo"),
+	             async: false,
+	             data: {scrwid : scrwid },
+	             success: function(data){
+	             	var jgsl = data.jgsl;
+	             	var yxfNum = data.yxfNum;
+	             	var yxfPercent = data.yxfPercent;
+	             	var wxfNum = data.wxfNum;
+	             	var wxfPercent = data.wxfPercent;
+	             	var wfpNum = data.wfpNum;
+	             	var wfpPercent = data.wfpPercent;
+	             	
+	             	ui.progressbar('p1').percent(yxfPercent);
+	             	ui.progressbar('p1').label("已下发 " + yxfNum);
+	             	ui.progressbar('p2').percent(wxfPercent);
+	             	ui.progressbar('p2').label("未下发 " + wxfNum);
+	             	ui.progressbar('p3').percent(wfpPercent);
+	             	ui.progressbar('p3').label("未分批 " + wfpNum);
+	             }
+	         });
+		}
+		function testTableClickrow(rowid,status) {
+		
+		}
+		//编辑行
+		function handleEdit(name,rowid){
+			ui.table("table-pcfp").editRow(rowid);
+		}
+		//下发
+		function handleXf(name,rowid){
+			var data = ui.table("table-pcfp").getRow(rowid);
+			if(!data.pcmc){
+				ui.warn("批次名称不能为空");
+				return;
+			}
+			if(!data.pcsl){
+				ui.warn("批次数量不能为空");
+				return;
+			}
+			if(!data.pcjhksrq){
+				ui.warn("批次开始日期不能为空");
+				return;
+			}
+			if(!data.pcjhwcrq){
+				ui.warn("批次完成日期不能为空");
+				return;
+			}
+			if(data.pcjhztdm != '10'){
+				ui.warn("该批次已经下发，无需再次下发");
+				return;
+			}
+			var scrwid = ui.hidden("scrwid").val();
+			$.ajax({
+	             type: "POST",
+	             url:   ui.getRealUrl("xfpc"),
+	             async: false,
+	             data: {scrwpcid : rowid ,scrwid : scrwid},
+	             success: function(data){
+	             	ui.table("table-pcfp").reload();
+	             	ui.success('批次下发成功');
+	      		    progressbar();
+	             }
+	         });
+		}
+		//删除
+		function handleDelete(name,rowid){
+			var data = ui.table("table-pcfp").getRow(rowid);
+			if(data.pcjhztdm != '10'){
+				ui.warn("已下发的批次不能被删除");
+				return;
+			}
+			var scrwid = ui.hidden("scrwid").val();
+			ui.table("table-pcfp").removeRow(rowid);
+			$.ajax({
+		             type: "POST",
+		             url:   ui.getRealUrl("deletePc"),
+		             async: false,
+		             data: {scrwpcid : rowid,scrwid : scrwid },
+		             success: function(data){
+		       			  progressbar();
+		         }
+		     });
+		}
+		var num = 0;
+		function fpBtnClick(){
+			if (num > 0){
+				ui.alert("已存在分配任务！");
+				return;
+			}
+			num = num + 1;
+			var scrwid = ui.hidden("scrwid").val();
+			var ljid = ui.hidden("ljid").val();
+			var dyjgsl = ui.number("dyjgsl").val();
+			var dyjgpc = ui.number("dyjgpc").val();
+			
+			if(!dyjgsl || isNaN(dyjgsl) || parseInt(dyjgsl)<1){
+				ui.warn("加工数量 不合法");
+				return;
+			}
+			if(!dyjgpc || isNaN(dyjgpc) || parseInt(dyjgpc)<1){
+				ui.warn("加工批次 不合法");
+				return;
+			}
+			if(parseInt(dyjgsl) < parseInt(dyjgpc)){
+				ui.warn("加工数量 不能小于 加工批次 ");
+				return;
+			}
+			
+			var pcjhksrq = ui.hidden("pcjhksrq").val();
+			var pcjhwcrq = ui.hidden("pcjhwcrq").val();
+			var pcmc = ui.hidden("scph").val();
+			
+			$.ajax({
+		             type: "POST",
+		             url:   ui.getRealUrl("/pcfp/saveNewPc"),
+		             async: false,
+		             data: {scrwid : scrwid ,ljid : ljid ,dyjgsl:dyjgsl,dyjgpc:dyjgpc,
+		             			pcjhksrq:pcjhksrq,pcjhwcrq:pcjhwcrq,pcmc:pcmc},
+		             success: function(data){
+		             	ui.table("table-pcfp").reload();
+		             	progressbar();
+		             }
+		         });
+		}
+		function addrow(rowid,data) {
+			ui.table("table-pcfp").addRow(rowid,data,"first");
+		}
+		
+		function pfjh_func(){
+			var scrwid = ui.hidden("scrwid").val();
+			var rows= ui.table("table-pcfp").getSelectedRows();
+			var paramArray = new Array(rows.length) ;
+			var scrwpcids="";
+			for(var i = 0 ; i < rows.length ;i++){
+				var rowData = ui.table("table-pcfp").getRow(rows[i]);
+				if(rowData.pcjhztdm != '未下发'){
+					continue;
+				}
+				if(editIdArray.indexOf(rows[i])){
+					ui.warn("下发第" +rows[i] + "行批次，请先保存");
+				}
+				if(!rowData.pcmc){
+					ui.warn("第" +rows[i] + "行,批次名称不能为空");
+					return;
+				}
+				if(!rowData.pcsl){
+					ui.warn("第" +rows[i] + "行,批次数量不能为空");
+					return;
+				}
+				if(!rowData.pcjhksrq){
+					ui.warn("第" +rows[i] + "行,批次开始日期不能为空");
+					return;
+				}
+				if(!rowData.pcjhwcrq){
+					ui.warn("第" +rows[i] + "行,批次完成日期不能为空");
+					return;
+				}
+				if(rowData.pcjhztdm != '10'){
+					//ui.warn("该批次已经下发，无需再次下发");
+					continue;
+				}
+				paramArray.push(rowData.scrwpcid);
+				scrwpcids = scrwpcids + rowData.scrwpcid +",";
+			}
+			$.ajax({
+		             type: "POST",
+		             url:   ui.getRealUrl("pcfpAll"),
+		             async: false,
+		             data: {scrwid : scrwid ,scrwpcids : scrwpcids},
+		             success: function(data){
+		             	ui.table("table-pcfp").reload();
+		             	progressbar();
+		             }
+		         });
+		}
+		
+		var editIdArray = new Array();
+		function tableLoaded_func(data){
+			if(!data){
+				return;
+			}
+			var rows = data.rows;
+			for(var i = 0 ; i<rows.length; i++){
+				var rowid = rows[i].scrwpcid;
+				var pcmc = rows[i].pcmc;
+				var pcjhksrq = rows[i].pcjhksrq;
+				var pcjhwcrq = rows[i].pcjhwcrq;
+				if(!pcmc  && !pcjhksrq && !pcjhwcrq){
+					ui.table("table-pcfp").editRow(rowid,"updatePc");
+					editIdArray.push(rowid);
+				}
+			}
+		}
+		
+		function kcxx_modal_func(){
+			ui.modal("kcxxModal").show();
+			ui.table("table-partsStockModal").reload();
+			ui.table("table-materielStockModal").reload();
+		}
+	
+		function double_select_func(){
+			var rows = ui.table("table-pcfp").getSelectedRows();
+			var rowdata = ui.table("table-pcfp").getRow(rows[0]);
+			if(rowdata.pcjhztdm == '10'){
+				ui.table("table-pcfp").editRow(rows[0],"updatePc");
+			}
+		}
+		
+		document.getElementById('table-pcfp').onkeydown=function(event){            
+			var e = event || window.event || arguments.callee.caller.arguments[0];            
+			if(e && e.keyCode==13){     
+			 	var rows = ui.table("table-pcfp").getSelectedRows();
+				ui.table("table-pcfp").saveRow(rows[0],"updatePc");
+			}
+			if(e && e.keyCode==27){    //ESC退出编辑 
+				var rows = ui.table("table-pcfp").getSelectedRows();
+				ui.table("table-pcfp").restoreRow(rows[0]);
+				
+			}            
+		}; 
+		
+	]]>
+	</attribute>
+</view>

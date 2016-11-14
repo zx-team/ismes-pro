@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 生产任务表 -->
+<model version="1.0.7" name="sc_scrw">
+	<fields>
+		<scrwid type="pk" pk="true" comment="生产任务ID"  label="生产任务ID"/>
+		<scrwbh type="string" maxlength="50" comment="生产任务编号" label="生产任务编号"/>
+		<ljid type="pk" comment="零件ID" label="零件ID"/>
+		<jgsl type="integer" comment="加工数量" label="加工数量"/>
+		<dw type="dict" comment="单位" label="单位"/>
+		<jgksrq type="timestamp" comment="加工开始日期"  label="加工开始日期"/>
+		<jgwcrq type="timestamp" comment="加工完成日期" label="加工完成日期"/>
+		<bz type="string" maxlength="500" comment="备注" label="备注"/>
+		<scrwlrsj type="timestamp" comment="生产任务录入时间" label="生产任务录入时间"/>
+		<scrwztdm type="dict" comment="生产任务状态代码" label="生产任务状态代码"/>
+		<scrwlydm type="dict" comment="生产任务来源代码" label="生产任务来源代码"/>
+		<scrwfpztdm type="dict" comment="生产任务分批状态代码" label="生产任务分批状态代码"/>
+		<scph type="string" comment="生产批号" label="生产批号"/>
+		<wlid type="string" comment="物料id" label="物料id"/>
+		<sjwlkcid type="string" comment="实际物料库存id" label="实际物料库存id"/>
+		<jgzt type="string" comment="加工状态" label="加工状态"/>
+		<jhsl type="string" comment="计划数量" label="计划数量"/>
+		<yxwc type="string" comment="允许误差" label="允许误差"/>
+		<mplh type="string" comment="毛坯炉号" label="毛坯炉号"/>
+		<ljxh type="string" comment="零件项号" label="零件项号"/>
+	</fields>
+</model>
